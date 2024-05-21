@@ -1,0 +1,35 @@
+import { configureStore } from '@reduxjs/toolkit';
+import styleReducer from './styleSlice';
+import mainReducer from './mainSlice';
+import authSlice from './authSlice';
+import openAiSlice from './openAiSlice';
+
+import usersSlice from './users/usersSlice';
+import analyticsSlice from './analytics/analyticsSlice';
+import notificationsSlice from './notifications/notificationsSlice';
+import organizationsSlice from './organizations/organizationsSlice';
+import testimonialsSlice from './testimonials/testimonialsSlice';
+import rolesSlice from './roles/rolesSlice';
+import permissionsSlice from './permissions/permissionsSlice';
+
+export const store = configureStore({
+  reducer: {
+    style: styleReducer,
+    main: mainReducer,
+    auth: authSlice,
+    openAi: openAiSlice,
+
+    users: usersSlice,
+    analytics: analyticsSlice,
+    notifications: notificationsSlice,
+    organizations: organizationsSlice,
+    testimonials: testimonialsSlice,
+    roles: rolesSlice,
+    permissions: permissionsSlice,
+  },
+});
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;
