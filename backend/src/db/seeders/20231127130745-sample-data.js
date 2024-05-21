@@ -39,6 +39,16 @@ const AnalyticsData = [
 
     // type code here for "relation_one" field
   },
+
+  {
+    submitted_count: 4,
+
+    approved_count: 2,
+
+    rejected_count: 2,
+
+    // type code here for "relation_one" field
+  },
 ];
 
 const NotificationsData = [
@@ -65,6 +75,14 @@ const NotificationsData = [
 
     // type code here for "relation_one" field
   },
+
+  {
+    type: 'Weekly Summary',
+
+    message: 'Here is your weekly summary report.',
+
+    // type code here for "relation_one" field
+  },
 ];
 
 const OrganizationsData = [
@@ -82,6 +100,12 @@ const OrganizationsData = [
 
   {
     name: 'Gamma Inc',
+
+    // type code here for "relation_many" field
+  },
+
+  {
+    name: 'Delta Ltd',
 
     // type code here for "relation_many" field
   },
@@ -136,6 +160,22 @@ const TestimonialsData = [
 
     // type code here for "relation_one" field
   },
+
+  {
+    client_name: 'Bob Brown',
+
+    // type code here for "images" field
+
+    testimonial_text: 'Excellent customer support and fast delivery.',
+
+    rating: 5,
+
+    email: 'bob.brown@example.com',
+
+    status: 'pending',
+
+    // type code here for "relation_one" field
+  },
 ];
 
 // Similar logic for "relation_many"
@@ -173,6 +213,17 @@ async function associateAnalyticWithOrganization() {
   if (Analytic2?.setOrganization) {
     await Analytic2.setOrganization(relatedOrganization2);
   }
+
+  const relatedOrganization3 = await Organizations.findOne({
+    offset: Math.floor(Math.random() * (await Organizations.count())),
+  });
+  const Analytic3 = await Analytics.findOne({
+    order: [['id', 'ASC']],
+    offset: 3,
+  });
+  if (Analytic3?.setOrganization) {
+    await Analytic3.setOrganization(relatedOrganization3);
+  }
 }
 
 async function associateNotificationWithUser() {
@@ -207,6 +258,17 @@ async function associateNotificationWithUser() {
   });
   if (Notification2?.setUser) {
     await Notification2.setUser(relatedUser2);
+  }
+
+  const relatedUser3 = await Users.findOne({
+    offset: Math.floor(Math.random() * (await Users.count())),
+  });
+  const Notification3 = await Notifications.findOne({
+    order: [['id', 'ASC']],
+    offset: 3,
+  });
+  if (Notification3?.setUser) {
+    await Notification3.setUser(relatedUser3);
   }
 }
 
@@ -244,6 +306,17 @@ async function associateTestimonialWithOrganization() {
   });
   if (Testimonial2?.setOrganization) {
     await Testimonial2.setOrganization(relatedOrganization2);
+  }
+
+  const relatedOrganization3 = await Organizations.findOne({
+    offset: Math.floor(Math.random() * (await Organizations.count())),
+  });
+  const Testimonial3 = await Testimonials.findOne({
+    order: [['id', 'ASC']],
+    offset: 3,
+  });
+  if (Testimonial3?.setOrganization) {
+    await Testimonial3.setOrganization(relatedOrganization3);
   }
 }
 
