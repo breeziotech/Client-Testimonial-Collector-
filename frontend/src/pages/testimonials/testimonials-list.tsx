@@ -1,165 +1,74 @@
-import { mdiChartTimelineVariant } from '@mdi/js';
-import Head from 'next/head';
-import { uniqueId } from 'lodash';
-import React, { ReactElement, useState } from 'react';
-import CardBox from '../../components/CardBox';
-import LayoutAuthenticated from '../../layouts/Authenticated';
-import SectionMain from '../../components/SectionMain';
-import SectionTitleLineWithButton from '../../components/SectionTitleLineWithButton';
-import { getPageTitle } from '../../config';
-import TableTestimonials from '../../components/Testimonials/TableTestimonials';
-import BaseButton from '../../components/BaseButton';
-import axios from 'axios';
-import { useAppDispatch, useAppSelector } from '../../stores/hooks';
-import CardBoxModal from '../../components/CardBoxModal';
-import DragDropFilePicker from '../../components/DragDropFilePicker';
-import {
-  setRefetch,
-  uploadCsv,
-} from '../../stores/testimonials/testimonialsSlice';
+import React, { useState } from 'react';
+import { TextField, Button, Typography, Box, Container, Avatar } from '@mui/material';
 
-import { hasPermission } from '../../helpers/userPermissions';
+const TestimonialForm = () => {
+  const [name, setName] = useState('');
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [testimonial, setTestimonial] = useState('');
+  const [email, setEmail] = useState('');
+  const [rating, setRating] = useState(5);
 
-const TestimonialsTablesPage = () => {
-  const [filterItems, setFilterItems] = useState([]);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [isModalActive, setIsModalActive] = useState(false);
-
-  const { currentUser } = useAppSelector((state) => state.auth);
-
-  const dispatch = useAppDispatch();
-
-  const [filters] = useState([
-    { label: 'ClientName', title: 'client_name' },
-    { label: 'TestimonialText', title: 'testimonial_text' },
-    { label: 'Email', title: 'email' },
-
-    { label: 'Rating', title: 'rating', number: 'true' },
-
-    { label: 'Organization', title: 'organization' },
-  ]);
-
-  const hasCreatePermission =
-    currentUser && hasPermission(currentUser, 'CREATE_TESTIMONIALS');
-
-  const addFilter = () => {
-    const newItem = {
-      id: uniqueId(),
-      fields: {
-        filterValue: '',
-        filterValueFrom: '',
-        filterValueTo: '',
-        selectedField: '',
-      },
-    };
-    newItem.fields.selectedField = filters[0].title;
-    setFilterItems([...filterItems, newItem]);
-  };
-
-  const getTestimonialsCSV = async () => {
-    const response = await axios({
-      url: '/testimonials?filetype=csv',
-      method: 'GET',
-      responseType: 'blob',
-    });
-    const type = response.headers['content-type'];
-    const blob = new Blob([response.data], { type: type });
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = 'testimonialsCSV.csv';
-    link.click();
-  };
-
-  const onModalConfirm = async () => {
-    if (!csvFile) return;
-    await dispatch(uploadCsv(csvFile));
-    dispatch(setRefetch(true));
-    setCsvFile(null);
-    setIsModalActive(false);
-  };
-
-  const onModalCancel = () => {
-    setCsvFile(null);
-    setIsModalActive(false);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
   };
 
   return (
-    <>
-      <Head>
-        <title>{getPageTitle('Testimonials')}</title>
-      </Head>
-      <SectionMain>
-        <SectionTitleLineWithButton
-          icon={mdiChartTimelineVariant}
-          title='Testimonials'
-          main
-        >
-          {''}
-        </SectionTitleLineWithButton>
-        <CardBox className='mb-6'>
-          {hasCreatePermission && (
-            <BaseButton
-              className={'mr-3'}
-              href={'/testimonials/testimonials-new'}
-              color='info'
-              label='New Item'
-            />
-          )}
-
-          <BaseButton
-            className={'mr-3'}
-            color='info'
-            label='Filter'
-            onClick={addFilter}
+    <Container maxWidth="sm">
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 3 }}>
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          {/* Add a relevant icon */}
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Submit Your Testimonial
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            label="Name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
-          <BaseButton
-            className={'mr-3'}
-            color='info'
-            label='Download CSV'
-            onClick={getTestimonialsCSV}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="testimonial"
+            label="Testimonial"
+            id="testimonial"
+            multiline
+            rows={4}
+            value={testimonial}
+            onChange={(e) => setTestimonial(e.target.value)}
           />
-
-          {hasCreatePermission && (
-            <BaseButton
-              color='info'
-              label='Upload CSV'
-              onClick={() => setIsModalActive(true)}
-            />
-          )}
-        </CardBox>
-        <CardBox className='mb-6' hasTable>
-          <TableTestimonials
-            filterItems={filterItems}
-            setFilterItems={setFilterItems}
-            filters={filters}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="email"
+            label="Email"
+            id="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-        </CardBox>
-      </SectionMain>
-      <CardBoxModal
-        title='Upload CSV'
-        buttonColor='info'
-        buttonLabel={'Confirm'}
-        // buttonLabel={false ? 'Deleting...' : 'Confirm'}
-        isActive={isModalActive}
-        onConfirm={onModalConfirm}
-        onCancel={onModalCancel}
-      >
-        <DragDropFilePicker
-          file={csvFile}
-          setFile={setCsvFile}
-          formats={'.csv'}
-        />
-      </CardBoxModal>
-    </>
+          <Button variant="contained" component="label">
+            Upload Photo
+            <input type="file" hidden onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)} />
+          </Button>
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+            Submit
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
-TestimonialsTablesPage.getLayout = function getLayout(page: ReactElement) {
-  return (
-    <LayoutAuthenticated permission={'READ_TESTIMONIALS'}>
-      {page}
-    </LayoutAuthenticated>
-  );
-};
-
-export default TestimonialsTablesPage;
+export default TestimonialForm;
